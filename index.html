@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Manav Dhote — Portfolio</title>
+  <meta name="description" content="Manav Dhote — DevOps | Python ML/AI | Java | DSA — Cinematic portfolio." />
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- GSAP for smooth complex animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+
+  <!-- Icon set -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css">
+
+  <style>
+    /* --------------------------------------------------
+       Cinematic, dark-first aesthetic
+       Single-file portfolio
+       Well-commented and ready to customize
+       -------------------------------------------------- */
+
+    :root{
+      --bg: #07070b;
+      --panel: rgba(255,255,255,0.04);
+      --muted: #9aa3b2;
+      --accent: linear-gradient(90deg,#7c5cff,#3dd6ff);
+      --glass: rgba(255,255,255,0.04);
+      --glass-2: rgba(255,255,255,0.02);
+      --glass-border: rgba(255,255,255,0.06);
+      --glass-blur: 8px;
+      --max-width: 1100px;
+      --radius: 14px;
+      color-scheme: dark;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{
+      margin:0;
+      background: radial-gradient(1000px 600px at 10% 10%, rgba(124,92,255,0.09), transparent 6%),
+                  radial-gradient(800px 500px at 90% 90%, rgba(61,214,255,0.05), transparent 6%),
+                  var(--bg);
+      color:#e6eef8;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.5;
+      overflow-x:hidden;
+    }
+
+    .container{
+      max-width:var(--max-width);
+      margin:0 auto;
+      padding:48px 20px;
+    }
+
+    /* Loading overlay */
+    #loader{
+      position:fixed;inset:0;background:linear-gradient(180deg, rgba(7,7,11,0.95), rgba(7,7,11,1));
+      display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:18px
+    }
+    .loader-ring{width:72px;height:72px;border-radius:50%;border:6px solid rgba(255,255,255,0.06);border-top-color:#7c5cff;animation:spin 1.2s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loader-text{font-weight:600;color:var(--muted);letter-spacing:1px}
+
+    /* Navigation */
+    header{position:fixed;left:0;right:0;top:18px;z-index:50;display:flex;align-items:center;justify-content:center}
+    nav{background:var(--glass-2);backdrop-filter: blur(6px);border:1px solid var(--glass-border);padding:10px 18px;border-radius:999px}
+    .nav-inner{display:flex;gap:12px;align-items:center}
+    .brand{font-family:'Playfair Display', serif;font-weight:700;letter-spacing:0.6px}
+    .nav-link{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:10px;font-weight:600}
+    .nav-link:hover{color:#fff;background:linear-gradient(90deg,#2b2b49, rgba(255,255,255,0.03))}
+
+    /* Hero */
+    .hero{min-height:100vh;display:flex;align-items:center}
+    .hero-grid{display:grid;grid-template-columns: 1fr 420px;gap:40px;align-items:center;width:100%;max-width:1200px;margin:0 auto}
+
+    .intro{
+      padding:36px 0;
+    }
+    .eyebrow{color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:2px}
+    h1{font-size:44px;margin:8px 0 12px;line-height:1.02}
+    .roles{font-weight:600;color:#bcd3ff}
+    p.lead{color:var(--muted);max-width:60ch}
+
+    /* Action buttons */
+    .actions{display:flex;gap:12px;margin-top:18px}
+    .btn{padding:12px 18px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:transparent;font-weight:700;cursor:pointer}
+    .btn-primary{background:linear-gradient(90deg,#7c5cff,#3dd6ff);color:#07070b;border:none}
+
+    /* Profile card */
+    .profile-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:18px;padding:20px;border:1px solid var(--glass-border);backdrop-filter:blur(var(--glass-blur))}
+    .avatar{width:100%;height:320px;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#0d0d12,#17171a)}
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+
+    /* Particles canvas */
+    #particles{position:absolute;inset:0;pointer-events:none;z-index:0}
+
+    /* Sections */
+    section{padding:96px 0}
+    h2.section-title{font-size:28px;margin:0 0 18px}
+    .section-sub{color:var(--muted);margin-bottom:24px}
+
+    /* Skills */
+    .skills{display:flex;gap:12px;flex-wrap:wrap}
+    .skill{background:var(--panel);padding:14px;border-radius:12px;min-width:180px;flex:1 1 220px}
+    .skill h4{margin:0 0 8px}
+    .bar{height:10px;background:rgba(255,255,255,0.04);border-radius:999px;overflow:hidden}
+    .bar > i{display:block;height:100%;background:linear-gradient(90deg,#7c5cff,#3dd6ff);width:40%}
+
+    /* Projects */
+    .projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;border:1px solid var(--glass-border);transition:transform .35s,box-shadow .35s}
+    .card:hover{transform:translateY(-8px);box-shadow:0 20px 50px rgba(0,0,0,0.55)}
+    .card .thumb{height:160px;border-radius:10px;overflow:hidden;margin-bottom:12px;background:#0b0b0e;display:flex;align-items:center;justify-content:center}
+    .card h3{margin:6px 0}
+    .chip{display:inline-block;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.03);font-weight:700;color:var(--muted);font-size:12px}
+
+    /* Modal */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(0deg, rgba(0,0,0,0.6), rgba(0,0,0,0.6));z-index:200}
+    .modal.open{display:flex}
+    .modal-card{width:min(920px,95%);background:rgba(9,9,12,0.95);padding:24px;border-radius:12px;border:1px solid var(--glass-border)}
+
+    /* Timeline */
+    .timeline{border-left:2px solid rgba(255,255,255,0.04);padding-left:20px}
+    .timeline-item{margin-bottom:26px}
+    .timeline-item h4{margin:0}
+    .timeline-item time{color:var(--muted);font-size:13px}
+
+    /* Contact */
+    form.contact{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    form.contact textarea{grid-column:1/-1;min-height:120px;padding:12px;border-radius:10px;border:1px solid var(--glass-border);background:transparent;color:inherit}
+    input,textarea{padding:12px;border-radius:10px;border:1px solid var(--glass-border);background:transparent;color:inherit}
+    .socials{display:flex;gap:12px;align-items:center}
+
+    /* Footer */
+    footer{padding:18px 0;text-align:center;color:var(--muted);font-size:13px}
+
+    /* Responsive */
+    @media (max-width:980px){
+      .hero-grid{grid-template-columns:1fr;}
+      .avatar{height:260px}
+      form.contact{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div id="loader">
+    <div class="loader-ring" aria-hidden></div>
+    <div class="loader-text">Loading portfolio — Manav Dhote</div>
+  </div>
+
+  <!-- Particles canvas (decorative) -->
+  <canvas id="particles" aria-hidden></canvas>
+
+  <!-- Navigation -->
+  <header>
+    <nav aria-label="Main navigation">
+      <div class="nav-inner container">
+        <div class="brand">Manav <span style="color:transparent;background:var(--accent);-webkit-background-clip:text;background-clip:text;">Dhote</span></div>
+        <div style="flex:1"></div>
+        <a class="nav-link" href="#about">About</a>
+        <a class="nav-link" href="#projects">Projects</a>
+        <a class="nav-link" href="#skills">Skills</a>
+        <a class="nav-link" href="#contact">Contact</a>
+        <button class="btn" id="themeToggle" title="Toggle theme">🌗</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <main>
+    <section class="hero">
+      <div class="hero-grid container">
+        <div class="intro">
+          <div class="eyebrow">Hello, I'm</div>
+          <h1>Manav Dhote</h1>
+          <div class="roles" id="typing">DevOps Engineer • Python & ML Developer • Java & DSA Enthusiast</div>
+          <p class="lead">I build resilient systems, craft ML models, and write elegant algorithms. I blend production-grade DevOps with research-minded Machine Learning to deliver reliable, scalable, and impactful solutions.</p>
+
+          <div class="actions">
+            <a class="btn btn-primary" href="#projects">Explore Projects</a>
+            <a class="btn" href="#contact">Get in touch</a>
+          </div>
+
+          <div style="margin-top:26px;display:flex;gap:12px;flex-wrap:wrap">
+            <div class="chip">DevOps</div>
+            <div class="chip">Python</div>
+            <div class="chip">Machine Learning</div>
+            <div class="chip">Java</div>
+            <div class="chip">DSA</div>
+          </div>
+        </div>
+
+        <aside class="profile-card" aria-label="Profile card">
+          <div style="display:flex;gap:12px;align-items:center;">
+            <div style="flex:1">
+              <div style="display:flex;gap:12px;align-items:center">
+                <div style="width:72px;height:72px;border-radius:12px;overflow:hidden;background:linear-gradient(90deg,#7c5cff,#3dd6ff);display:flex;align-items:center;justify-content:center;font-weight:800">M</div>
+                <div>
+                  <div style="font-weight:800">Manav Dhote</div>
+                  <div style="color:var(--muted);font-size:13px">DevOps • ML • Python • Java</div>
+                </div>
+              </div>
+
+              <div style="margin-top:12px;color:var(--muted);font-size:13px">Based in India • Open to remote opportunities</div>
+            </div>
+          </div>
+
+          <div style="margin-top:16px">
+            <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
+              <div style="font-weight:700">Stats</div>
+              <div style="color:var(--muted);font-size:13px">Updated</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+              <div class="chip">10+ Projects</div>
+              <div class="chip">ML + Prod</div>
+              <div class="chip">CFA-friendly</div>
+            </div>
+          </div>
+
+        </aside>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="container">
+        <h2 class="section-title">About</h2>
+        <p class="section-sub">A bit about me — how I work and what I build.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:start">
+          <div>
+            <p>I'm <strong>Manav Dhote</strong>, a pragmatic engineer who enjoys building systems that work in the real world. My focus areas include production-ready DevOps pipelines, Python-based ML systems, and algorithmic problem solving in Java. I enjoy end-to-end ownership — from idea and data to deployment and monitoring.</p>
+
+            <p>My approach: think in systems, automate everything, test early, and write readable code. I enjoy mentoring peers, contributing to open-source, and learning new tools when solving hard problems.</p>
+
+            <div style="margin-top:18px">
+              <a class="btn btn-primary" href="#projects">See featured projects</a>
+              <a class="btn" href="#contact">Hire / Collaborate</a>
+            </div>
+          </div>
+
+          <aside style="background:var(--panel);padding:18px;border-radius:12px;border:1px solid var(--glass-border)">
+            <h4 style="margin-top:0">Quick facts</h4>
+            <ul style="color:var(--muted);margin:10px 0 0;padding-left:18px">
+              <li>Primary: DevOps, Python, ML & AI</li>
+              <li>Secondary: Java, DSA, Cloud</li>
+              <li>Tools: Docker, Kubernetes, GitHub Actions, Terraform, PyTorch, scikit-learn</li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills">
+      <div class="container">
+        <h2 class="section-title">Skills</h2>
+        <p class="section-sub">Technical strengths and proficiency.</p>
+
+        <div class="skills">
+          <div class="skill">
+            <h4>DevOps & Cloud</h4>
+            <div class="bar" aria-hidden style="margin-bottom:8px"><i style="width:88%"></i></div>
+            <div style="color:var(--muted);font-size:13px">Docker • Kubernetes • Terraform • CI/CD • Monitoring</div>
+          </div>
+
+          <div class="skill">
+            <h4>Python & ML</h4>
+            <div class="bar" aria-hidden style="margin-bottom:8px"><i style="width:84%"></i></div>
+            <div style="color:var(--muted);font-size:13px">scikit-learn • PyTorch • Data pipelines • Feature engineering</div>
+          </div>
+
+          <div class="skill">
+            <h4>Java & DSA</h4>
+            <div class="bar" aria-hidden style="margin-bottom:8px"><i style="width:76%"></i></div>
+            <div style="color:var(--muted);font-size:13px">Algorithms, Data Structures, OOP, Competitive coding</div>
+          </div>
+
+          <div class="skill">
+            <h4>Automation & Scripting</h4>
+            <div class="bar" aria-hidden style="margin-bottom:8px"><i style="width:86%"></i></div>
+            <div style="color:var(--muted);font-size:13px">Bash • Python scripting • GitHub Actions</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+      <div class="container">
+        <h2 class="section-title">Featured Projects</h2>
+        <p class="section-sub">Interactive demos, production systems, and algorithmic challenges.</p>
+
+        <div class="projects-grid">
+          <!-- Project 1 -->
+          <article class="card" data-project='{"title":"Auto-Scaler for ML Jobs","desc":"A Kubernetes operator + autoscaler that uses predictive models to scale GPU workloads based on queued job metrics.","stack":"K8s, Python, Prometheus, PyTorch","link":"#"}'>
+            <div class="thumb"><div style="font-weight:700;color:var(--muted)">Auto-Scaler (Demo)</div></div>
+            <h3>Auto-Scaler for ML Jobs</h3>
+            <p style="color:var(--muted);font-size:14px">Predictive scale-up for GPU clusters; reduces cost while meeting deadlines.</p>
+            <div style="margin-top:12px;display:flex;gap:8px;align-items:center;justify-content:space-between">
+              <div class="chip">Kubernetes</div>
+              <div>
+                <button class="btn" onclick="openProject(this)">Details</button>
+                <a class="btn" href="#" onclick="event.preventDefault();alert('Open GitHub')">GitHub</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Project 2 -->
+          <article class="card" data-project='{"title":"End-to-End MLOps","desc":"CI/CD for ML model training, validation, and deployment with data versioning and monitoring.","stack":"GitHub Actions, DVC, MLflow","link":"#"}'>
+            <div class="thumb"><div style="font-weight:700;color:var(--muted)">MLOps Pipeline</div></div>
+            <h3>End-to-End MLOps</h3>
+            <p style="color:var(--muted);font-size:14px">Automated model lifecycle from data to production with tests and monitors.</p>
+            <div style="margin-top:12px;display:flex;gap:8px;align-items:center;justify-content:space-between">
+              <div class="chip">CI/CD</div>
+              <div>
+                <button class="btn" onclick="openProject(this)">Details</button>
+                <a class="btn" href="#" onclick="event.preventDefault();alert('Open GitHub')">GitHub</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Project 3 -->
+          <article class="card" data-project='{"title":"Algo Visualizer","desc":"Interactive visualizer for classic algorithms: sorting, graphs, and pathfinding (Java).","stack":"Java, WebAssembly (Demo)","link":"#"}'>
+            <div class="thumb"><div style="font-weight:700;color:var(--muted)">Algo Visualizer</div></div>
+            <h3>Algorithm Visualizer</h3>
+            <p style="color:var(--muted);font-size:14px">Visual demos to teach and debug algorithms with performance metrics.</p>
+            <div style="margin-top:12px;display:flex;gap:8px;align-items:center;justify-content:space-between">
+              <div class="chip">Java</div>
+              <div>
+                <button class="btn" onclick="openProject(this)">Details</button>
+                <a class="btn" href="#" onclick="event.preventDefault();alert('Open GitHub')">GitHub</a>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE / TIMELINE -->
+    <section id="experience">
+      <div class="container">
+        <h2 class="section-title">Experience & Achievements</h2>
+        <p class="section-sub">Selected highlights across engineering and projects.</p>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <h4>ML Platform Project</h4>
+            <time>2024 — Present</time>
+            <p style="color:var(--muted)">Built an end-to-end platform to train, validate, and serve ML models with automated CI/CD and monitoring.</p>
+          </div>
+
+          <div class="timeline-item">
+            <h4>DevOps Tooling & Automation</h4>
+            <time>2023 — 2024</time>
+            <p style="color:var(--muted)">Designed infrastructure-as-code and observability for critical microservices on Kubernetes.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+      <div class="container">
+        <h2 class="section-title">Contact</h2>
+        <p class="section-sub">Let's build something together — reach out for work, mentorship, or collaboration.</p>
+
+        <div style="display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start">
+          <div>
+            <form class="contact" onsubmit="submitContact(event)">
+              <input name="name" placeholder="Your name" required />
+              <input name="email" placeholder="Your email" type="email" required />
+              <input name="subject" placeholder="Subject" />
+              <textarea name="message" placeholder="Message" required></textarea>
+              <button class="btn btn-primary" type="submit" style="grid-column:1/-1">Send message</button>
+            </form>
+          </div>
+
+          <aside style="background:var(--panel);padding:18px;border-radius:12px;border:1px solid var(--glass-border)">
+            <h4 style="margin-top:0">Get in touch</h4>
+            <p style="color:var(--muted);">Email: <a href="mailto:manav@example.com">manav@example.com</a></p>
+            <p style="color:var(--muted);">LinkedIn • GitHub • Twitter (placeholders)</p>
+
+            <div style="margin-top:12px">
+              <div class="socials">
+                <a href="#" class="chip"><i class="bx bxl-github"></i> GitHub</a>
+                <a href="#" class="chip"><i class="bx bxl-linkedin-square"></i> LinkedIn</a>
+                <a href="#" class="chip"><i class="bx bxl-twitter"></i> Twitter</a>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">Made with care • © <span id="year"></span> Manav Dhote</div>
+    </footer>
+  </main>
+
+  <!-- Modal for project details -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-card" role="document">
+      <button class="btn" style="float:right" onclick="closeModal()">Close</button>
+      <h3 id="modalTitle"></h3>
+      <p id="modalDesc" style="color:var(--muted)"></p>
+      <div id="modalStack" style="margin-top:12px;color:var(--muted)"></div>
+      <div style="margin-top:12px">
+        <a id="modalLink" class="btn" href="#">View repo / demo</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Basic interactive behaviors and animations
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Fake contact handler (replace with Netlify/Formspree/AWS Lambda in prod)
+    function submitContact(e){
+      e.preventDefault();
+      const form = new FormData(e.target);
+      alert('Thanks ' + form.get('name') + '! Message sent (demo).');
+      e.target.reset();
+    }
+
+    // Modal helpers
+    function openProject(btn){
+      const card = btn.closest('.card');
+      const data = JSON.parse(card.dataset.project);
+      document.getElementById('modalTitle').textContent = data.title;
+      document.getElementById('modalDesc').textContent = data.desc;
+      document.getElementById('modalStack').textContent = 'Stack: ' + data.stack;
+      const link = document.getElementById('modalLink');
+      link.href = data.link || '#';
+      document.getElementById('modal').classList.add('open');
+      document.getElementById('modal').setAttribute('aria-hidden','false');
+    }
+    function closeModal(){
+      document.getElementById('modal').classList.remove('open');
+      document.getElementById('modal').setAttribute('aria-hidden','true');
+    }
+
+    // Basic theme toggle (keeps it client-only)
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', ()=>{
+      if(document.documentElement.hasAttribute('data-light')){
+        document.documentElement.removeAttribute('data-light');
+      } else {
+        document.documentElement.setAttribute('data-light','1');
+      }
+    });
+
+    // Typing effect (simple)
+    (function typing(){
+      const el = document.getElementById('typing');
+      const phrases = ['DevOps Engineer','Python & ML Developer','Java & DSA Enthusiast','Systems thinker • Automation lover'];
+      let i=0, j=0, forward=true;
+      function step(){
+        const txt = phrases[i];
+        el.textContent = txt.slice(0,j) + (j%2? '': '');
+        if(forward){ j++; if(j>txt.length){ forward=false; setTimeout(step,900); return; }} else { j--; if(j<0){ forward=true; i=(i+1)%phrases.length; setTimeout(step,400); return; }}
+        setTimeout(step,80);
+      }
+      step();
+    })();
+
+    // Simple particle background (canvas)
+    (function particles(){
+      const canvas = document.getElementById('particles');
+      const ctx = canvas.getContext('2d');
+      let w=canvas.width=innerWidth; let h=canvas.height=innerHeight;
+      window.addEventListener('resize',()=>{w=canvas.width=innerWidth;h=canvas.height=innerHeight});
+      const num = Math.round((w*h)/70000);
+      const pts = [];
+      for(let i=0;i<num;i++){pts.push({x:Math.random()*w,y:Math.random()*h, vx:(Math.random()-0.5)/2, vy:(Math.random()-0.5)/2, r:Math.random()*1.6+0.2})}
+      function draw(){
+        ctx.clearRect(0,0,w,h);
+        for(const p of pts){
+          p.x += p.vx; p.y += p.vy;
+          if(p.x<0) p.x=w; if(p.x>w) p.x=0; if(p.y<0) p.y=h; if(p.y>h) p.y=0;
+          ctx.beginPath(); ctx.globalAlpha=0.9; ctx.fillStyle='rgba(124,92,255,0.14)'; ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    })();
+
+    // GSAP entry animations (runs after DOM loaded)
+    window.addEventListener('load',()=>{
+      // hide loader
+      gsap.to('#loader',{autoAlpha:0, duration:0.8, onComplete:()=>document.getElementById('loader').style.display='none'});
+
+      // hero intro
+      gsap.from('header',{y:-30,autoAlpha:0,duration:0.8});
+      gsap.from('.intro h1',{y:20,autoAlpha:0,duration:0.9,delay:0.2});
+      gsap.from('.intro .roles',{y:12,autoAlpha:0,duration:0.9,delay:0.35});
+      gsap.from('.intro .lead',{y:10,autoAlpha:0,duration:0.9,delay:0.5});
+      gsap.from('.profile-card',{scale:0.98,autoAlpha:0,duration:0.9,delay:0.6});
+
+      // scroll-triggered reveals
+      gsap.utils.toArray('.card').forEach((el,i)=>{
+        gsap.from(el,{y:30,autoAlpha:0,duration:0.8,delay:0.08*i,scrollTrigger:{trigger:el,start:'top 80%'}});
+      });
+
+      gsap.utils.toArray('section').forEach((sec)=>{
+        gsap.from(sec.querySelectorAll('h2, .section-sub, p, .skill, .timeline-item'),{y:18,autoAlpha:0,duration:0.6,stagger:0.08,scrollTrigger:{trigger:sec,start:'top 85%'}})
+      })
+    });
+
+    // Accessibility: close modal on escape
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); })
+  </script>
+
+</body>
+</html>
